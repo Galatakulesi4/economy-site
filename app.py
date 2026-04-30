@@ -25,55 +25,133 @@ BASE_STYLE = """
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f4f6f8;
+    background: #eef1f5;
     color: #222;
+    line-height: 1.7;
+}
+.topbar {
+    background: #07111f;
+    color: #cfd8e3;
+    padding: 8px 30px;
+    font-size: 13px;
 }
 .header {
-    background: linear-gradient(135deg, #102030, #1d3557);
+    background: linear-gradient(135deg, #0b1f36, #1d3557, #0f172a);
     color: white;
-    padding: 35px;
+    padding: 45px 30px;
     text-align: center;
+}
+.header h1 {
+    margin: 0;
+    font-size: 38px;
+}
+.header p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #dbeafe;
 }
 .nav {
     background: #14213d;
-    padding: 12px;
+    padding: 14px;
     text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 .nav a {
     color: white;
-    margin: 0 15px;
+    margin: 0 16px;
     text-decoration: none;
     font-weight: bold;
 }
+.nav a:hover {
+    text-decoration: underline;
+}
 .container {
-    max-width: 950px;
+    max-width: 1080px;
     margin: 30px auto;
-    padding: 0 20px;
+    padding: 0 22px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 22px;
 }
 .article {
     background: white;
-    padding: 22px;
-    margin-bottom: 18px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 26px;
+    margin-bottom: 22px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 .article h2 {
     color: #1d3557;
+    margin-top: 0;
+}
+.article h3 {
+    color: #243b53;
 }
 .article img {
     width: 100%;
     border-radius: 12px;
-    margin-top: 12px;
+    margin: 14px 0;
+}
+.badge {
+    display: inline-block;
+    background: #e0ecff;
+    color: #1d3557;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.data-box {
+    background: #f8fafc;
+    border-left: 5px solid #1d3557;
+    padding: 16px;
+    margin: 16px 0;
+    border-radius: 8px;
+}
+.side-card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.side-card h3 {
+    margin-top: 0;
+    color: #1d3557;
+}
+.news-list li {
+    margin-bottom: 10px;
 }
 .footer {
     text-align: center;
     color: #777;
-    padding: 25px;
+    padding: 35px;
+    font-size: 13px;
 }
 .tiny-access {
     color: #777;
     text-decoration: none;
-    font-size: 12px;
+    font-size: 11px;
+}
+.tiny-access:hover {
+    color: #444;
+}
+@media (max-width: 800px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    .nav a {
+        display: inline-block;
+        margin: 6px 8px;
+    }
+    .header h1 {
+        font-size: 28px;
+    }
 }
 </style>
 """
@@ -90,9 +168,13 @@ def page(title, content):
 </head>
 <body>
 
+<div class="topbar">
+    Türkiye Economy Desk · Macro Briefing · Markets · Trade · Policy
+</div>
+
 <div class="header">
-    <h1>Global Economy Monitor</h1>
-    <p>Markets, finance, trade, and international economic analysis</p>
+    <h1>Türkiye Economic Monitor</h1>
+    <p>Macroeconomic analysis, markets, trade, finance, and geopolitical economy</p>
 </div>
 
 <div class="nav">
@@ -101,6 +183,7 @@ def page(title, content):
     <a href="/finance">Finance</a>
     <a href="/trade">Trade</a>
     <a href="/policy">Policy</a>
+    <a href="/geopolitics">Geopolitics</a>
 </div>
 
 <div class="container">
@@ -108,7 +191,8 @@ def page(title, content):
 </div>
 
 <div class="footer">
-    © 2026 Global Economy Monitor · <a class="tiny-access" href="/archive-briefing">archive</a>
+    © 2026 Türkiye Economic Monitor · Data commentary based on public macroeconomic indicators ·
+    <a class="tiny-access" href="/archive-briefing">archive</a>
 </div>
 
 </body>
@@ -118,45 +202,250 @@ def page(title, content):
 @app.route("/")
 def home():
     content = """
-    <div class="article">
-        <h2>Global Markets Watch: Inflation and Interest Rate Expectations</h2>
-        <p>
-        Global investors continue to monitor inflation expectations, central bank policy decisions,
-        and bond market movements. Interest rate expectations remain one of the strongest drivers
-        of financial market pricing.
-        </p>
-        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80">
-    </div>
+    <div class="grid">
+        <div>
+            <div class="article">
+                <span class="badge">Main Briefing</span>
+                <h2>Türkiye Economic Outlook: Growth, Inflation, Policy Credibility and External Balance</h2>
+                <p>
+                Türkiye remains one of the most important emerging market economies because of its large population,
+                diversified industrial base, strategic location between Europe, the Middle East and Central Asia,
+                and its role in trade, logistics, tourism and manufacturing. The economy has shown resilience,
+                but the macroeconomic environment continues to be shaped by high inflation, exchange-rate sensitivity,
+                monetary tightening, external financing needs and geopolitical risk.
+                </p>
+                <p>
+                According to World Bank country data, Türkiye's current-dollar GDP was about 1.32 trillion USD in 2024,
+                with a population of roughly 85.5 million. This places Türkiye among the largest economies in the world,
+                but its per-capita income and macro-financial stability indicators remain highly sensitive to inflation,
+                exchange-rate movements and global capital flows.
+                </p>
+                <img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80">
+                <div class="data-box">
+                    <b>Key Macro Snapshot:</b><br>
+                    GDP size: about 1.32 trillion USD in 2024<br>
+                    Population: about 85.5 million in 2024<br>
+                    2025 growth: around 3.6% according to official/outlook summaries<br>
+                    Inflation: still elevated, but moving through a disinflation process<br>
+                    Main policy issue: balancing price stability, growth and external confidence
+                </div>
+            </div>
 
-    <div class="article">
-        <h2>Energy Prices and Emerging Market Pressure</h2>
-        <p>
-        Energy-importing countries may face pressure on current account balances when oil and gas
-        prices increase. Exchange rate stability and diversified energy sources remain important.
-        </p>
-        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1200&q=80">
-    </div>
+            <div class="article">
+                <span class="badge">GDP and Real Economy</span>
+                <h2>GDP Growth: Resilience Despite Tight Financial Conditions</h2>
+                <p>
+                Türkiye's growth model has historically relied on domestic demand, credit expansion, construction,
+                services, exports and tourism. In recent years, the policy mix has shifted toward tighter monetary
+                conditions to reduce inflation. This creates a difficult balance: higher interest rates can help reduce
+                inflation expectations, but they may also slow private investment, consumption and credit-sensitive sectors.
+                </p>
+                <p>
+                The 2025 growth performance was moderate rather than weak. Annual growth around 3.6% indicates that the
+                economy continued to expand despite restrictive monetary policy. However, the composition of growth matters.
+                If growth depends heavily on consumption and inventories rather than productivity, exports and investment,
+                long-term sustainability becomes weaker.
+                </p>
+                <p>
+                For 2026 and 2027, international forecasts generally expect moderate growth. A key question is whether
+                the Turkish economy can move from inflation-driven nominal expansion toward productivity-based real growth.
+                This requires stronger institutional credibility, lower risk premia, technology investment, higher value-added
+                exports and more predictable policy implementation.
+                </p>
+            </div>
 
-    <div class="article">
-        <h2>Portfolio Strategy: Why Diversification Still Matters</h2>
-        <p>
-        Diversification can reduce unsystematic risk by spreading capital across different assets.
-        However, market-wide risk cannot be fully eliminated.
-        </p>
+            <div class="article">
+                <span class="badge">Inflation</span>
+                <h2>Inflation: The Central Problem of the Adjustment Process</h2>
+                <p>
+                Inflation remains the most important macroeconomic challenge for Türkiye. High inflation reduces purchasing
+                power, weakens long-term planning, increases uncertainty for firms and households, and makes financial
+                valuation more difficult. Even when nominal wages rise, real purchasing power may remain under pressure
+                if price increases continue faster than income growth.
+                </p>
+                <p>
+                Türkiye's inflation dynamics are connected to several channels: exchange-rate pass-through, energy import
+                costs, food prices, rents, wage adjustments, expectations and fiscal conditions. Because Türkiye imports
+                significant amounts of energy, global oil and natural gas prices can quickly influence domestic inflation
+                and the current account balance.
+                </p>
+                <p>
+                The disinflation process depends not only on high policy rates but also on credibility. If households and
+                firms believe inflation will remain high, they adjust prices, wages and contracts accordingly. This creates
+                inflation inertia. Therefore, the Central Bank's communication, policy consistency and coordination with
+                fiscal policy are essential.
+                </p>
+                <img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=1200&q=80">
+            </div>
+
+            <div class="article">
+                <span class="badge">Monetary Policy</span>
+                <h2>Interest Rates, Turkish Lira and Investor Confidence</h2>
+                <p>
+                Monetary policy in Türkiye is closely watched because interest-rate decisions affect the Turkish lira,
+                bank deposits, credit growth, bond yields, stock-market valuations and foreign investor behavior.
+                A tight monetary stance may attract lira deposits and portfolio flows, but it also increases financing
+                costs for firms and households.
+                </p>
+                <p>
+                The key policy challenge is sequencing. If interest rates are reduced too early, inflation expectations
+                may become unanchored again. If rates remain too high for too long, financial conditions can become
+                restrictive for production and investment. The credibility of the policy path is therefore as important
+                as the level of the policy rate itself.
+                </p>
+                <p>
+                For investors, the Turkish lira is not only a currency variable but also a confidence indicator. Stable
+                reserve accumulation, lower dollarization and predictable monetary policy can reduce external vulnerability.
+                However, political risk, global risk appetite and energy prices continue to influence capital flows.
+                </p>
+            </div>
+
+            <div class="article">
+                <span class="badge">External Balance</span>
+                <h2>Current Account, Energy Imports and Export Strategy</h2>
+                <p>
+                Türkiye's current account balance is structurally sensitive to energy prices. When oil and natural gas
+                prices rise, the import bill increases and external financing needs become more visible. Tourism revenues,
+                manufacturing exports and service income help offset this pressure, but the energy channel remains a
+                major macroeconomic risk.
+                </p>
+                <p>
+                A sustainable improvement in the current account requires higher value-added exports, domestic energy
+                diversification, renewable energy investment and stronger logistics competitiveness. Türkiye has advantages
+                in automotive, machinery, textiles, defense industry, white goods, tourism and regional trade networks.
+                However, global competition requires technological upgrading and productivity growth.
+                </p>
+                <img src="https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=1200&q=80">
+            </div>
+
+            <div class="article">
+                <span class="badge">Politics and Economy</span>
+                <h2>Political Economy: Institutions, Risk Premium and Policy Predictability</h2>
+                <p>
+                Türkiye's economic outlook cannot be separated from political economy. Investors evaluate not only GDP
+                growth and inflation but also institutional quality, legal predictability, regulatory stability and
+                foreign-policy risk. A country can have strong growth potential, but if policy uncertainty is high, the
+                required risk premium also rises.
+                </p>
+                <p>
+                The relationship with the European Union remains economically important because the EU is one of Türkiye's
+                largest trade partners. Customs Union modernization, investment flows, visa policy, migration management,
+                defense cooperation and regional diplomacy all influence the economic environment.
+                </p>
+                <p>
+                Relations with the United States, Russia, the Middle East and Central Asia also matter. Energy routes,
+                defense policy, sanctions risk, regional conflict and trade corridors can affect foreign direct investment,
+                currency expectations and sovereign risk perception.
+                </p>
+            </div>
+
+            <div class="article">
+                <span class="badge">Markets</span>
+                <h2>Borsa Istanbul, Bonds and Portfolio Allocation</h2>
+                <p>
+                In a high-inflation environment, investors often search for assets that can protect real purchasing power.
+                Equities, gold, foreign currency, inflation-linked instruments and real assets become important alternatives.
+                However, each asset has different risks. Stocks may benefit from nominal revenue growth, but valuations can
+                fall when interest rates rise. Bonds may become attractive when disinflation becomes credible and yields
+                begin to decline.
+                </p>
+                <p>
+                Portfolio strategy in Türkiye requires close attention to inflation, policy rates, exchange rates and
+                company-level fundamentals. Export-oriented firms may benefit from foreign-currency revenues, while highly
+                indebted firms can suffer from expensive financing. Banks are sensitive to regulation, deposit costs,
+                loan growth and asset quality.
+                </p>
+            </div>
+
+            <div class="article">
+                <span class="badge">Structural Reform</span>
+                <h2>Long-Term Challenges: Productivity, Education, Technology and Rule of Law</h2>
+                <p>
+                Türkiye's long-term potential depends on productivity growth. Sustainable development requires more than
+                short-term credit expansion. It requires education quality, labor-market efficiency, digital transformation,
+                research and development, institutional trust and efficient capital allocation.
+                </p>
+                <p>
+                Productivity-oriented reforms would help Türkiye move from middle-income pressure toward higher value-added
+                production. This means stronger universities, better vocational training, deeper capital markets, transparent
+                public procurement, predictable tax policy and stronger innovation ecosystems.
+                </p>
+            </div>
+        </div>
+
+        <div>
+            <div class="side-card">
+                <h3>Indicator Board</h3>
+                <ul class="news-list">
+                    <li><b>GDP:</b> About 1.32 trillion USD in 2024.</li>
+                    <li><b>Population:</b> About 85.5 million.</li>
+                    <li><b>Inflation:</b> Still elevated; disinflation remains the main policy target.</li>
+                    <li><b>Growth:</b> Moderate expansion expected for 2026.</li>
+                    <li><b>Main risk:</b> Inflation persistence and external financing sensitivity.</li>
+                </ul>
+            </div>
+
+            <div class="side-card">
+                <h3>Market Watch</h3>
+                <p>
+                Investors are watching CBRT policy decisions, foreign reserves, exchange-rate stability,
+                inflation expectations, bank profitability, bond yields and Borsa Istanbul valuations.
+                </p>
+            </div>
+
+            <div class="side-card">
+                <h3>Geopolitical Watch</h3>
+                <p>
+                Türkiye's location gives it strategic value in energy, logistics, migration, defense,
+                Black Sea security, Middle East diplomacy and Europe-Asia trade corridors.
+                </p>
+            </div>
+
+            <div class="side-card">
+                <h3>Policy Questions</h3>
+                <ul class="news-list">
+                    <li>Can disinflation continue without a sharp growth slowdown?</li>
+                    <li>Will reserve accumulation strengthen external confidence?</li>
+                    <li>Can exports shift toward higher value-added sectors?</li>
+                    <li>Will policy credibility reduce the risk premium?</li>
+                </ul>
+            </div>
+        </div>
     </div>
     """
-    return page("Global Economy Monitor", content)
+    return page("Türkiye Economic Monitor", content)
 
 @app.route("/markets")
 def markets():
     content = """
     <div class="article">
-        <h2>Markets</h2>
+        <span class="badge">Markets</span>
+        <h2>Financial Markets in Türkiye: Equities, Bonds, FX and Risk Appetite</h2>
         <p>
-        Equity markets are affected by earnings expectations, interest rates, liquidity conditions,
-        and global risk appetite. When interest rates rise, investors often reassess stock valuations.
+        Turkish financial markets are strongly influenced by inflation expectations, interest-rate policy,
+        exchange-rate dynamics and global emerging-market sentiment. In periods of high inflation, investors
+        try to protect real returns, while firms focus on working-capital management and financing costs.
         </p>
-        <img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=1200&q=80">
+        <img src="https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1200&q=80">
+        <p>
+        Borsa Istanbul can attract domestic investors when inflation is high and alternative real returns are uncertain.
+        However, equity valuations are not risk-free. Higher discount rates reduce the present value of future cash flows.
+        Therefore, even profitable companies can face valuation pressure when interest rates remain high.
+        </p>
+        <p>
+        Bond markets are particularly sensitive to the disinflation path. If investors believe inflation will fall,
+        longer-term bonds may become more attractive. But if inflation expectations remain sticky, investors demand
+        higher yields as compensation.
+        </p>
+    </div>
+
+    <div class="article">
+        <h2>Sector Sensitivity</h2>
+        <p>
+        Banks are affected by deposit costs, credit regulation, net interest margins and asset quality. Exporters are
+        influenced by exchange rates and external demand. Construction and real estate are sensitive to credit costs.
+        Tourism benefits from foreign-currency revenues but remains exposed to geopolitical and seasonal risks.
+        </p>
     </div>
     """
     return page("Markets", content)
@@ -165,12 +454,28 @@ def markets():
 def finance():
     content = """
     <div class="article">
-        <h2>Finance</h2>
+        <span class="badge">Finance</span>
+        <h2>Corporate Finance in a High-Inflation Economy</h2>
         <p>
-        Financial analysis focuses on profitability, liquidity, leverage, efficiency, and market
-        valuation. Investors compare expected return with risk before making portfolio decisions.
+        In Türkiye, corporate finance decisions are shaped by inflation, exchange-rate volatility and high nominal
+        interest rates. Companies must manage liquidity, debt maturity, foreign-currency exposure and operating margins.
+        Financial analysis therefore requires both accounting ratios and macroeconomic interpretation.
         </p>
         <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80">
+        <p>
+        Liquidity ratios show whether a firm can meet short-term obligations. Leverage ratios show debt burden.
+        Profitability ratios indicate whether the firm can turn sales and assets into profit. But in a high-inflation
+        environment, nominal growth can mislead analysts. Real growth and inflation-adjusted performance matter more.
+        </p>
+    </div>
+
+    <div class="article">
+        <h2>Investment Strategy and Real Return</h2>
+        <p>
+        Investors should compare nominal returns with inflation. A 35% nominal return may look high, but if inflation
+        is also high, the real return can be much lower. This is why real return, risk premium, currency movement and
+        opportunity cost are central concepts in Turkish financial analysis.
+        </p>
     </div>
     """
     return page("Finance", content)
@@ -179,12 +484,28 @@ def finance():
 def trade():
     content = """
     <div class="article">
-        <h2>International Trade</h2>
+        <span class="badge">Trade</span>
+        <h2>Türkiye's Trade Position: Europe, Energy and Regional Corridors</h2>
         <p>
-        International trade is shaped by exchange rates, tariffs, logistics costs, geopolitical risks,
-        and supply chain strategies. Firms increasingly focus on supplier diversification.
+        Türkiye's trade structure reflects its geographic position and industrial capacity. The country is closely
+        connected to European markets through manufacturing supply chains, while also maintaining commercial links
+        with the Middle East, North Africa, Central Asia and Russia.
         </p>
-        <img src="https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=1200&q=80">
+        <img src="https://images.unsplash.com/photo-1508385082359-f38ae991e8f2?auto=format&fit=crop&w=1200&q=80">
+        <p>
+        The Customs Union with the European Union remains a central element of Türkiye's trade architecture.
+        Modernization of this framework could influence investment, standards, digital trade and services.
+        However, political relations and regulatory alignment continue to shape the pace of progress.
+        </p>
+    </div>
+
+    <div class="article">
+        <h2>Energy Import Dependence</h2>
+        <p>
+        Energy import dependence is one of the main reasons Türkiye's current account balance is sensitive to global
+        commodity prices. Renewable energy, domestic production, energy efficiency and diversified supply contracts
+        can reduce this vulnerability over time.
+        </p>
     </div>
     """
     return page("Trade", content)
@@ -193,15 +514,60 @@ def trade():
 def policy():
     content = """
     <div class="article">
-        <h2>Economic Policy</h2>
+        <span class="badge">Policy</span>
+        <h2>Economic Policy: Disinflation, Credibility and Fiscal Coordination</h2>
         <p>
-        Fiscal and monetary policy influence inflation, employment, exchange rates, and investment
-        expectations. Central bank credibility remains important for price stability.
+        Türkiye's policy framework is currently centered on reducing inflation while preserving financial stability.
+        Monetary policy alone is not enough. Fiscal discipline, income policy, public-sector pricing decisions and
+        structural reforms all influence the inflation path.
         </p>
         <img src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1200&q=80">
+        <p>
+        Policy credibility is built through consistency. When economic actors believe that the authorities will maintain
+        a clear anti-inflation stance, expectations can improve. If expectations improve, the cost of disinflation may
+        become lower over time.
+        </p>
+    </div>
+
+    <div class="article">
+        <h2>Fiscal Policy</h2>
+        <p>
+        Fiscal policy affects inflation through public spending, taxes, administered prices and budget deficits.
+        A credible medium-term fiscal framework can support monetary policy by reducing demand pressure and improving
+        investor confidence.
+        </p>
     </div>
     """
     return page("Policy", content)
+
+@app.route("/geopolitics")
+def geopolitics():
+    content = """
+    <div class="article">
+        <span class="badge">Geopolitics</span>
+        <h2>Türkiye's Geopolitical Economy</h2>
+        <p>
+        Türkiye's economic outlook is connected to its geopolitical position. The country is a NATO member, a candidate
+        country for the European Union, a major Black Sea actor, a regional energy corridor and an important diplomatic
+        player in the Middle East and Caucasus.
+        </p>
+        <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80">
+        <p>
+        Geopolitical developments can affect tourism, capital flows, defense spending, energy security and trade routes.
+        For this reason, investors include political risk and regional stability in their Türkiye analysis.
+        </p>
+    </div>
+
+    <div class="article">
+        <h2>EU, US, Russia and the Middle East</h2>
+        <p>
+        Relations with the EU affect trade, investment and standards. Relations with the US influence defense, finance
+        and sanctions risk. Relations with Russia matter for energy, tourism and regional diplomacy. Developments in the
+        Middle East can affect energy prices, migration, logistics and security expectations.
+        </p>
+    </div>
+    """
+    return page("Geopolitics", content)
 
 CHAT_PAGE = """
 <!DOCTYPE html>
@@ -218,7 +584,7 @@ body {
     padding: 20px;
 }
 .box {
-    max-width: 750px;
+    max-width: 760px;
     margin: auto;
 }
 h2 {
@@ -243,7 +609,7 @@ input, textarea, button {
     box-sizing: border-box;
 }
 textarea {
-    height: 170px;
+    height: 220px;
     resize: vertical;
 }
 button {
@@ -261,6 +627,9 @@ button {
 .refresh {
     background: #2d6a4f;
 }
+.back {
+    background: #555;
+}
 </style>
 </head>
 <body>
@@ -272,6 +641,10 @@ button {
     <input name="name" placeholder="Your name" required>
     <input name="password" type="password" placeholder="Access code" required>
     <button type="submit">Enter</button>
+</form>
+
+<form method="get" action="/">
+    <button class="back" type="submit">Back to Monitor</button>
 </form>
 
 {% else %}
@@ -312,7 +685,7 @@ button {
 def archive_briefing():
     conn = get_db()
     messages = conn.execute(
-        "SELECT * FROM messages ORDER BY id DESC LIMIT 200"
+        "SELECT * FROM messages ORDER BY id DESC LIMIT 300"
     ).fetchall()
     conn.close()
 
