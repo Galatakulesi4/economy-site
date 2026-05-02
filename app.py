@@ -20,8 +20,83 @@ def get_db():
     """)
     return conn
 
+# ─────────────────────────────────────────────
+#  SAMPLE / DEMO DATA  (clearly labelled)
+# ─────────────────────────────────────────────
+SAMPLE_DATA = {
+    "note": "⚠️ SAMPLE / DEMO DATA — illustrative values for UI demonstration only",
+    "countries": {
+        "Turkey":        {"gdp": 1320, "gdp_growth": 3.4,  "inflation": 30.87, "unemployment": 8.5,  "interest_rate": 46.0, "usd_exchange": 32.5,  "current_account": -24.1},
+        "Iran":          {"gdp": 367,  "gdp_growth": 4.2,  "inflation": 44.5,  "unemployment": 10.2, "interest_rate": 23.0, "usd_exchange": 42000, "current_account": 5.2},
+        "Germany":       {"gdp": 4456, "gdp_growth": -0.2, "inflation": 2.3,   "unemployment": 5.8,  "interest_rate": 4.5,  "usd_exchange": 0.93,  "current_account": 176.0},
+        "United States": {"gdp": 27360,"gdp_growth": 2.8,  "inflation": 3.5,   "unemployment": 3.9,  "interest_rate": 5.25, "usd_exchange": 1.0,   "current_account": -821.0},
+        "China":         {"gdp": 17795,"gdp_growth": 5.2,  "inflation": 0.1,   "unemployment": 5.1,  "interest_rate": 3.45, "usd_exchange": 7.24,  "current_account": 253.0},
+    }
+}
+
+INDICATOR_META = {
+    "gdp": {
+        "label": "GDP (USD Billion)",
+        "icon": "📊",
+        "meaning": "Gross Domestic Product — the total monetary value of all goods and services produced within a country in a year.",
+        "why_matters": "GDP measures economic size. Larger GDP means more resources, stronger negotiating power, and greater capacity for public investment.",
+        "interpret": "High GDP = large, productive economy. Low GDP ≠ poor governance — smaller nations have smaller GDPs by nature. Growth rate matters as much as absolute size.",
+        "unit": "B USD",
+    },
+    "gdp_growth": {
+        "label": "GDP Growth (%)",
+        "icon": "📈",
+        "meaning": "The percentage change in GDP compared to the previous year, adjusted for inflation (real growth).",
+        "why_matters": "Growth drives employment creation, corporate earnings and fiscal revenue. Sustained growth signals economic health.",
+        "interpret": "Above 3% = solid expansion. 0–2% = sluggish. Negative = recession. High-income nations often grow slower than emerging markets.",
+        "unit": "%",
+    },
+    "inflation": {
+        "label": "Inflation (CPI, %)",
+        "icon": "🔥",
+        "meaning": "Consumer Price Index inflation — the annual percentage rise in the average price level of goods and services households buy.",
+        "why_matters": "High inflation erodes real purchasing power, distorts investment decisions, and reduces the real return on savings.",
+        "interpret": "2% = widely considered healthy. Above 10% = high, harmful to savings. Above 30% = severe structural problem requiring policy action.",
+        "unit": "%",
+    },
+    "unemployment": {
+        "label": "Unemployment (%)",
+        "icon": "👥",
+        "meaning": "The share of the labor force that is jobless and actively seeking employment.",
+        "why_matters": "Unemployment represents wasted human capital and is linked to social stress, reduced consumption and fiscal pressure.",
+        "interpret": "Below 4% = near full employment (may cause wage inflation). 5–8% = moderate slack. Above 10% = significant problem.",
+        "unit": "%",
+    },
+    "interest_rate": {
+        "label": "Policy Interest Rate (%)",
+        "icon": "🏦",
+        "meaning": "The benchmark rate set by the central bank, used to guide borrowing costs across the economy.",
+        "why_matters": "The policy rate is the primary lever for controlling inflation and credit growth. It signals the central bank's stance.",
+        "interpret": "High rates = tight policy, expensive credit, reduces inflation. Low rates = loose policy, cheap credit, stimulates growth but may raise inflation.",
+        "unit": "%",
+    },
+    "usd_exchange": {
+        "label": "USD Exchange Rate",
+        "icon": "💱",
+        "meaning": "The number of domestic currency units needed to buy one US Dollar.",
+        "why_matters": "Exchange rates affect import costs, inflation, external debt burden and export competitiveness.",
+        "interpret": "Rising value (more local currency per USD) = depreciation, often inflationary. Falling value = appreciation, can reduce import costs.",
+        "unit": "local/USD",
+    },
+    "current_account": {
+        "label": "Current Account (USD Billion)",
+        "icon": "⚖️",
+        "meaning": "The net flow of goods, services, income and transfers between a country and the rest of the world.",
+        "why_matters": "A deficit means a country spends more on imports than it earns from exports — requiring external financing. A surplus is the opposite.",
+        "interpret": "Large surplus = strong external position (e.g. Germany, China). Large deficit = dependency on foreign capital inflows (vulnerability).",
+        "unit": "B USD",
+    },
+}
+
 BASE_STYLE = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap');
+
 :root{
     --navy:#07111f;
     --blue:#12355b;
@@ -30,10 +105,20 @@ BASE_STYLE = """
     --soft:#f3f6fa;
     --text:#222;
     --muted:#64748b;
+    /* dark UI additions */
+    --dk-bg:#0b1120;
+    --dk-card:#111827;
+    --dk-border:#1e2d45;
+    --dk-accent:#3b82f6;
+    --dk-gold:#f59e0b;
+    --dk-green:#10b981;
+    --dk-red:#ef4444;
+    --dk-text:#e2e8f0;
+    --dk-muted:#64748b;
 }
 body{
     margin:0;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:'Sora', Arial, sans-serif;
     background:var(--soft);
     color:var(--text);
     line-height:1.75;
@@ -43,6 +128,7 @@ body{
     color:#cbd5e1;
     padding:9px 30px;
     font-size:13px;
+    font-family:'IBM Plex Mono', monospace;
 }
 .header{
     background:linear-gradient(135deg,#06111f,#12355b,#1d3557,#0f172a);
@@ -54,6 +140,8 @@ body{
     font-size:44px;
     margin:0;
     letter-spacing:.5px;
+    font-family:'Sora', sans-serif;
+    font-weight:700;
 }
 .header p{
     margin-top:10px;
@@ -73,10 +161,9 @@ body{
     margin:0 15px;
     text-decoration:none;
     font-weight:bold;
+    font-size:14px;
 }
-.nav a:hover{
-    color:#facc15;
-}
+.nav a:hover{color:#facc15;}
 .container{
     max-width:1180px;
     margin:32px auto;
@@ -92,29 +179,12 @@ body{
     border-radius:16px;
     box-shadow:0 4px 14px rgba(0,0,0,.08);
 }
-.article{
-    padding:30px;
-    margin-bottom:24px;
-}
-.side-card{
-    padding:22px;
-    margin-bottom:20px;
-}
-.article h2,.side-card h3{
-    color:#12355b;
-    margin-top:0;
-}
-.article h2{
-    font-size:28px;
-}
-.article h3{
-    color:#1e3a5f;
-}
-.article img{
-    width:100%;
-    border-radius:14px;
-    margin:16px 0;
-}
+.article{padding:30px;margin-bottom:24px;}
+.side-card{padding:22px;margin-bottom:20px;}
+.article h2,.side-card h3{color:#12355b;margin-top:0;}
+.article h2{font-size:28px;}
+.article h3{color:#1e3a5f;}
+.article img{width:100%;border-radius:14px;margin:16px 0;}
 .badge{
     display:inline-block;
     background:#e8f1ff;
@@ -124,6 +194,16 @@ body{
     font-size:12px;
     font-weight:bold;
     margin-bottom:10px;
+}
+.badge-demo{
+    display:inline-block;
+    background:#fef3c7;
+    color:#92400e;
+    padding:5px 14px;
+    border-radius:22px;
+    font-size:12px;
+    font-weight:bold;
+    border:1px dashed #f59e0b;
 }
 .data-box{
     background:#f8fafc;
@@ -145,41 +225,195 @@ body{
     margin:18px 0;
     background:#fff;
 }
-.table th{
-    background:#12355b;
-    color:white;
+.table th{background:#12355b;color:white;}
+.table th,.table td{border:1px solid #d8dee9;padding:10px;text-align:left;}
+.news-list li{margin-bottom:10px;}
+.footer{text-align:center;color:#777;padding:38px;font-size:13px;}
+.tiny-access{color:#777;text-decoration:none;font-size:11px;}
+.tiny-access:hover{color:#333;}
+
+/* ── DARK DATA SECTIONS ── */
+.dark-section{
+    background:var(--dk-bg);
+    padding:40px 0;
+    margin:0 -22px;
 }
-.table th,.table td{
-    border:1px solid #d8dee9;
-    padding:10px;
-    text-align:left;
+.dark-section .container{margin:0 auto;}
+
+.indicator-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:20px;
+    margin:24px 0;
 }
-.news-list li{
-    margin-bottom:10px;
+.indicator-card{
+    background:var(--dk-card);
+    border:1px solid var(--dk-border);
+    border-radius:14px;
+    padding:22px;
+    color:var(--dk-text);
+    transition:transform .2s, box-shadow .2s;
 }
-.footer{
-    text-align:center;
-    color:#777;
-    padding:38px;
-    font-size:13px;
+.indicator-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
 }
-.tiny-access{
-    color:#777;
-    text-decoration:none;
+.indicator-card .ic-icon{font-size:28px;margin-bottom:8px;}
+.indicator-card .ic-label{
     font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--dk-muted);
+    font-family:'IBM Plex Mono',monospace;
 }
-.tiny-access:hover{
-    color:#333;
+.indicator-card .ic-value{
+    font-size:36px;
+    font-weight:700;
+    color:var(--dk-accent);
+    font-family:'IBM Plex Mono',monospace;
+    margin:4px 0;
 }
+.indicator-card .ic-unit{font-size:12px;color:var(--dk-muted);}
+.indicator-card .ic-divider{
+    border:none;
+    border-top:1px solid var(--dk-border);
+    margin:14px 0;
+}
+.ic-pill{
+    font-size:11px;
+    padding:3px 9px;
+    border-radius:20px;
+    font-weight:600;
+    margin-bottom:6px;
+    display:inline-block;
+}
+.ic-meaning{font-size:13px;color:#94a3b8;margin:6px 0 4px;}
+.ic-interpret{font-size:12px;color:#64748b;font-style:italic;}
+
+/* explanation card */
+.explain-card{
+    background:var(--dk-card);
+    border:1px solid var(--dk-border);
+    border-radius:12px;
+    padding:18px 22px;
+    color:var(--dk-text);
+    margin-bottom:16px;
+}
+.explain-card h4{
+    color:var(--dk-accent);
+    margin:0 0 8px;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.explain-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:12px;
+    margin-top:10px;
+}
+.explain-item{
+    background:#0f172a;
+    border-radius:8px;
+    padding:12px;
+    font-size:12px;
+    color:#cbd5e1;
+}
+.explain-item strong{
+    display:block;
+    color:var(--dk-gold);
+    margin-bottom:4px;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+}
+
+/* comparison table dark */
+.dk-table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--dk-text);
+}
+.dk-table th{
+    background:#1e2d45;
+    color:#94a3b8;
+    padding:12px 14px;
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+.dk-table td{
+    padding:11px 14px;
+    border-bottom:1px solid #1a2840;
+}
+.dk-table tr:hover td{background:#131f33;}
+.dk-table .country-name{
+    font-weight:600;
+    color:#e2e8f0;
+    font-family:'Sora',sans-serif;
+}
+.num-pos{color:var(--dk-green);}
+.num-neg{color:var(--dk-red);}
+.num-neu{color:#94a3b8;}
+.num-warn{color:var(--dk-gold);}
+
+/* chart wrapper */
+.chart-wrap{
+    background:var(--dk-card);
+    border:1px solid var(--dk-border);
+    border-radius:14px;
+    padding:24px;
+    margin:24px 0;
+}
+.chart-wrap h3{
+    color:var(--dk-text);
+    margin:0 0 16px;
+    font-size:16px;
+    font-family:'Sora',sans-serif;
+}
+.chart-wrap canvas{max-height:280px;}
+
+.demo-banner{
+    background:linear-gradient(90deg,#1c1400,#2d1f00);
+    border:1px dashed #f59e0b;
+    border-radius:10px;
+    padding:12px 18px;
+    color:#fbbf24;
+    font-size:13px;
+    margin-bottom:24px;
+    font-family:'IBM Plex Mono',monospace;
+}
+.section-title{
+    color:var(--dk-text);
+    font-size:22px;
+    font-family:'Sora',sans-serif;
+    font-weight:700;
+    margin:0 0 6px;
+}
+.section-sub{
+    color:var(--dk-muted);
+    font-size:14px;
+    margin-bottom:24px;
+}
+
 @media(max-width:850px){
     .grid{grid-template-columns:1fr;}
     .header h1{font-size:30px;}
     .nav a{display:inline-block;margin:6px 8px;}
+    .indicator-grid{grid-template-columns:1fr;}
+    .explain-row{grid-template-columns:1fr;}
 }
 </style>
 """
 
-def page(title, content):
+CHARTJS = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>'
+
+def page(title, content, use_charts=False):
+    extra = CHARTJS if use_charts else ""
     return f"""
 <!DOCTYPE html>
 <html>
@@ -188,6 +422,7 @@ def page(title, content):
 <title>{title}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {BASE_STYLE}
+{extra}
 </head>
 <body>
 
@@ -222,6 +457,102 @@ def page(title, content):
 </body>
 </html>
 """
+
+# ─────────────────────────────────────────────
+#  HELPER: build indicator cards for one country
+# ─────────────────────────────────────────────
+def build_indicator_cards(country):
+    d = SAMPLE_DATA["countries"][country]
+    cards = []
+    for key, meta in INDICATOR_META.items():
+        val = d[key]
+        # format value nicely
+        if key == "usd_exchange":
+            disp = f"{val:,.2f}" if val < 1000 else f"{val:,.0f}"
+        elif key in ("gdp", "current_account"):
+            disp = f"{val:+,.1f}" if key == "current_account" else f"{val:,.0f}"
+        else:
+            disp = f"{val:.1f}"
+
+        # colour hint
+        if key == "inflation":
+            col = "num-pos" if val < 5 else ("num-warn" if val < 15 else "num-neg")
+        elif key == "gdp_growth":
+            col = "num-pos" if val > 2 else ("num-warn" if val >= 0 else "num-neg")
+        elif key == "unemployment":
+            col = "num-pos" if val < 5 else ("num-warn" if val < 8 else "num-neg")
+        elif key == "current_account":
+            col = "num-pos" if val > 0 else "num-neg"
+        else:
+            col = "num-neu"
+
+        cards.append(f"""
+        <div class="indicator-card">
+            <div class="ic-icon">{meta['icon']}</div>
+            <div class="ic-label">{meta['label']}</div>
+            <div class="ic-value {col}">{disp}</div>
+            <div class="ic-unit">{meta['unit']}</div>
+            <hr class="ic-divider">
+            <div class="ic-meaning">{meta['meaning']}</div>
+            <div class="ic-interpret">{meta['interpret']}</div>
+        </div>""")
+    return "\n".join(cards)
+
+# ─────────────────────────────────────────────
+#  HELPER: explanation cards
+# ─────────────────────────────────────────────
+def build_explanation_cards():
+    html = []
+    for key, meta in INDICATOR_META.items():
+        html.append(f"""
+        <div class="explain-card">
+            <h4>{meta['icon']} {meta['label']}</h4>
+            <div class="explain-row">
+                <div class="explain-item">
+                    <strong>What it means</strong>
+                    {meta['meaning']}
+                </div>
+                <div class="explain-item">
+                    <strong>Why it matters</strong>
+                    {meta['why_matters']}
+                </div>
+                <div class="explain-item">
+                    <strong>How to interpret</strong>
+                    {meta['interpret']}
+                </div>
+            </div>
+        </div>""")
+    return "\n".join(html)
+
+# ─────────────────────────────────────────────
+#  HELPER: dark comparison table
+# ─────────────────────────────────────────────
+def build_comparison_table():
+    countries = list(SAMPLE_DATA["countries"].keys())
+    rows = []
+    for c in countries:
+        d = SAMPLE_DATA["countries"][c]
+        def cls(key, v):
+            if key == "inflation":   return "num-pos" if v < 5 else ("num-warn" if v < 15 else "num-neg")
+            if key == "gdp_growth":  return "num-pos" if v > 2 else ("num-warn" if v >= 0 else "num-neg")
+            if key == "unemployment":return "num-pos" if v < 5 else ("num-warn" if v < 8 else "num-neg")
+            if key == "current_account": return "num-pos" if v > 0 else "num-neg"
+            return "num-neu"
+
+        usd = d['usd_exchange']
+        usd_str = f"{usd:,.2f}" if usd < 1000 else f"{usd:,.0f}"
+        rows.append(f"""
+        <tr>
+            <td class="country-name">{c}</td>
+            <td class="num-neu">${d['gdp']:,.0f}B</td>
+            <td class="{cls('gdp_growth', d['gdp_growth'])}">{d['gdp_growth']:+.1f}%</td>
+            <td class="{cls('inflation', d['inflation'])}">{d['inflation']:.1f}%</td>
+            <td class="{cls('unemployment', d['unemployment'])}">{d['unemployment']:.1f}%</td>
+            <td class="num-neu">{d['interest_rate']:.2f}%</td>
+            <td class="num-neu">{usd_str}</td>
+            <td class="{cls('current_account', d['current_account'])}">${d['current_account']:+,.1f}B</td>
+        </tr>""")
+    return "\n".join(rows)
 
 @app.route("/")
 def home():
@@ -430,10 +761,19 @@ def home():
                 <p><b>Risk Premium:</b> extra return investors demand for uncertainty.</p>
                 <p><b>Disinflation:</b> inflation falls but prices still rise.</p>
             </div>
+
+            <div class="side-card" style="background:#0b1120;border:1px solid #1e2d45;">
+                <h3 style="color:#3b82f6;">→ Data Board</h3>
+                <p style="color:#94a3b8;font-size:14px;">
+                    Visit the <a href="/data" style="color:#f59e0b;">Data Board</a> for full macroeconomic indicators,
+                    country comparison charts, and indicator explanation cards.
+                </p>
+            </div>
         </div>
     </div>
     """
     return page("Türkiye Economic Monitor", content)
+
 
 @app.route("/markets")
 def markets():
@@ -482,6 +822,7 @@ def markets():
     """
     return page("Türkiye Markets", content)
 
+
 @app.route("/finance")
 def finance():
     content = """
@@ -518,6 +859,7 @@ def finance():
     </div>
     """
     return page("Türkiye Finance", content)
+
 
 @app.route("/trade")
 def trade():
@@ -558,6 +900,7 @@ def trade():
     """
     return page("Türkiye Trade", content)
 
+
 @app.route("/policy")
 def policy():
     content = """
@@ -594,6 +937,7 @@ def policy():
     </div>
     """
     return page("Türkiye Policy", content)
+
 
 @app.route("/geopolitics")
 def geopolitics():
@@ -634,9 +978,23 @@ def geopolitics():
     """
     return page("Türkiye Geopolitics", content)
 
+
 @app.route("/data")
 def data():
-    content = """
+    indicator_cards = build_indicator_cards("Turkey")
+    explanation_cards = build_explanation_cards()
+    comparison_rows = build_comparison_table()
+
+    countries = list(SAMPLE_DATA["countries"].keys())
+    inflations   = [SAMPLE_DATA["countries"][c]["inflation"]    for c in countries]
+    growths      = [SAMPLE_DATA["countries"][c]["gdp_growth"]   for c in countries]
+    unemployments= [SAMPLE_DATA["countries"][c]["unemployment"] for c in countries]
+    interest_rates=[SAMPLE_DATA["countries"][c]["interest_rate"] for c in countries]
+    curr_accs    = [SAMPLE_DATA["countries"][c]["current_account"] for c in countries]
+    gdps         = [SAMPLE_DATA["countries"][c]["gdp"]          for c in countries]
+
+    content = f"""
+    <!-- ── classic light article ── -->
     <div class="article">
         <span class="badge">Data Board</span>
         <h2>Türkiye Macro Data Board</h2>
@@ -671,8 +1029,184 @@ def data():
         </p>
     </div>
     """
-    return page("Türkiye Data Board", content)
 
+    # ── DARK SECTION starts here ──
+    dark = f"""
+    </div><!-- close .container -->
+
+    <div style="background:#0b1120; padding:48px 0; margin-top:16px;">
+    <div class="container">
+
+        <!-- DEMO BANNER -->
+        <div class="demo-banner">
+            ⚠ SAMPLE / DEMO DATA &nbsp;—&nbsp; All values below are illustrative examples for UI demonstration only.
+            They are based on broadly realistic orders of magnitude but are <u>not</u> verified live data.
+        </div>
+
+        <!-- ── SECTION 1: Turkey indicator cards ── -->
+        <div class="section-title">🇹🇷 Türkiye — Macroeconomic Indicators</div>
+        <div class="section-sub">Six key indicators with definitions and interpretation guidance</div>
+        <span class="badge-demo">DEMO DATA</span>
+        <div class="indicator-grid">
+            {indicator_cards}
+        </div>
+
+        <!-- ── SECTION 2: Charts ── -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:32px 0;">
+
+            <div class="chart-wrap">
+                <h3>📈 GDP Growth Rate Comparison (%)</h3>
+                <canvas id="chartGrowth"></canvas>
+            </div>
+
+            <div class="chart-wrap">
+                <h3>🔥 Inflation Rate Comparison (%)</h3>
+                <canvas id="chartInflation"></canvas>
+            </div>
+
+            <div class="chart-wrap">
+                <h3>👥 Unemployment Rate (%)</h3>
+                <canvas id="chartUnemployment"></canvas>
+            </div>
+
+            <div class="chart-wrap">
+                <h3>🏦 Policy Interest Rate (%)</h3>
+                <canvas id="chartInterest"></canvas>
+            </div>
+
+        </div>
+
+        <div class="chart-wrap">
+            <h3>⚖️ Current Account Balance (USD Billion) — Surplus vs Deficit</h3>
+            <canvas id="chartCA" style="max-height:220px;"></canvas>
+        </div>
+
+        <!-- ── SECTION 3: Country Comparison Table ── -->
+        <div class="section-title" style="margin-top:40px;">🌍 Country Comparison</div>
+        <div class="section-sub">Turkey · Iran · Germany · United States · China — side-by-side macro snapshot</div>
+        <span class="badge-demo">DEMO DATA</span>
+
+        <div style="overflow-x:auto;margin-top:16px;border-radius:12px;border:1px solid #1e2d45;">
+        <table class="dk-table">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>GDP (B USD)</th>
+                    <th>GDP Growth</th>
+                    <th>Inflation</th>
+                    <th>Unemployment</th>
+                    <th>Policy Rate</th>
+                    <th>FX (per USD)</th>
+                    <th>Current Acc.</th>
+                </tr>
+            </thead>
+            <tbody>
+                {comparison_rows}
+            </tbody>
+        </table>
+        </div>
+        <div style="font-size:11px;color:#475569;margin-top:8px;font-family:'IBM Plex Mono',monospace;">
+            🟢 Favorable &nbsp;|&nbsp; 🟡 Moderate &nbsp;|&nbsp; 🔴 Elevated concern &nbsp;|&nbsp; — Neutral
+            &nbsp;&nbsp;· Color coding is relative and simplified for readability.
+        </div>
+
+        <!-- ── SECTION 4: GDP bar chart ── -->
+        <div class="chart-wrap" style="margin-top:32px;">
+            <h3>📊 GDP Size Comparison (USD Billion)</h3>
+            <canvas id="chartGDP" style="max-height:240px;"></canvas>
+        </div>
+
+        <!-- ── SECTION 5: Explanation Cards ── -->
+        <div class="section-title" style="margin-top:48px;">📖 Indicator Guide</div>
+        <div class="section-sub">What each indicator means, why it matters, and how to interpret high or low values</div>
+        {explanation_cards}
+
+    </div>
+    </div>
+
+    <div class="container">
+    <!-- dummy open tag to let page() close it cleanly -->
+    <div style="display:none;">
+    """
+
+    # Build chart JS
+    labels_js = str(countries)
+    chart_js = f"""
+    <script>
+    const LABELS = {labels_js};
+    const COLORS = ['#3b82f6','#ef4444','#10b981','#f59e0b','#a855f7'];
+
+    function barChart(id, data, label, color, horizontal) {{
+        const ctx = document.getElementById(id);
+        if(!ctx) return;
+        new Chart(ctx, {{
+            type: horizontal ? 'bar' : 'bar',
+            data: {{
+                labels: LABELS,
+                datasets: [{{
+                    label: label,
+                    data: data,
+                    backgroundColor: COLORS,
+                    borderColor: COLORS,
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }}]
+            }},
+            options: {{
+                indexAxis: horizontal ? 'y' : 'x',
+                responsive: true,
+                plugins: {{
+                    legend: {{ display: false }},
+                    tooltip: {{ callbacks: {{ label: ctx => ' ' + ctx.parsed[horizontal ? 'x' : 'y'] }} }}
+                }},
+                scales: {{
+                    x: {{ ticks: {{ color:'#94a3b8' }}, grid: {{ color:'#1e2d45' }} }},
+                    y: {{ ticks: {{ color:'#94a3b8' }}, grid: {{ color:'#1e2d45' }} }}
+                }}
+            }}
+        }});
+    }}
+
+    barChart('chartGrowth',     {growths},       'GDP Growth %',     '#3b82f6', false);
+    barChart('chartInflation',  {inflations},    'Inflation %',      '#ef4444', false);
+    barChart('chartUnemployment',{unemployments},'Unemployment %',   '#f59e0b', false);
+    barChart('chartInterest',   {interest_rates},'Policy Rate %',    '#a855f7', false);
+    barChart('chartGDP',        {gdps},          'GDP B USD',        '#10b981', true);
+
+    // Current account — special color per sign
+    (function(){{
+        const ctx = document.getElementById('chartCA');
+        if(!ctx) return;
+        const vals = {curr_accs};
+        const cols = vals.map(v => v >= 0 ? '#10b981' : '#ef4444');
+        new Chart(ctx, {{
+            type: 'bar',
+            data: {{
+                labels: LABELS,
+                datasets: [{{ label: 'Current Account B USD', data: vals,
+                    backgroundColor: cols, borderColor: cols, borderWidth:1, borderRadius:6 }}]
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{ legend: {{ display: false }} }},
+                scales: {{
+                    x: {{ ticks: {{ color:'#94a3b8' }}, grid: {{ color:'#1e2d45' }} }},
+                    y: {{ ticks: {{ color:'#94a3b8' }}, grid: {{ color:'#1e2d45' }},
+                          title: {{ display:true, text:'B USD', color:'#64748b' }} }}
+                }}
+            }}
+        }});
+    }})();
+    </script>
+    """
+
+    full_content = content + dark + chart_js
+    return page("Türkiye Data Board", full_content, use_charts=True)
+
+
+# ─────────────────────────────────────────────
+#  ARCHIVE / CHAT (unchanged)
+# ─────────────────────────────────────────────
 CHAT_PAGE = """
 <!DOCTYPE html>
 <html>
@@ -786,31 +1320,23 @@ def archive_briefing():
 def login():
     password = request.form.get("password")
     name = request.form.get("name")
-
     if password == PASSWORD:
         session["ok"] = True
         session["name"] = name
-
     return redirect("/archive-briefing")
 
 @app.route("/send", methods=["POST"])
 def send():
     if session.get("ok"):
         text = request.form.get("text", "").strip()
-
         if text:
             conn = get_db()
             conn.execute(
                 "INSERT INTO messages(sender, text, time) VALUES (?, ?, ?)",
-                (
-                    session.get("name", "Anonymous"),
-                    text,
-                    datetime.now().strftime("%Y-%m-%d %H:%M")
-                )
+                (session.get("name", "Anonymous"), text, datetime.now().strftime("%Y-%m-%d %H:%M"))
             )
             conn.commit()
             conn.close()
-
     return redirect("/archive-briefing")
 
 @app.route("/clear", methods=["POST"])
@@ -820,7 +1346,6 @@ def clear():
         conn.execute("DELETE FROM messages")
         conn.commit()
         conn.close()
-
     return redirect("/archive-briefing")
 
 @app.route("/logout", methods=["POST"])
